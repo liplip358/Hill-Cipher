@@ -34,7 +34,7 @@ int main() {
         }
 
         int c;
-        while ((c = getchar()) != '\n' && c != EOF); 
+        while ((c = getchar()) != '\n' && c != EOF);
 
         if (choose == 'e' || choose == 'E') {
             encrypt();
@@ -56,12 +56,12 @@ int main() {
        (continue_choice != 'y' && continue_choice != 'Y' && continue_choice != 'n' && continue_choice != 'N')) {
         printf("錯誤輸入，是否繼續使用程式？(y/n)：");
         while ((c = getchar()) != '\n' && c != EOF); 
-}
+        }
 
     if (continue_choice == 'n' || continue_choice == 'N') {
         printf("程式結束。\n");
         break; 
-}
+        }       
         while ((c = getchar()) != '\n' && c != EOF); 
     } while (1);
     system("pause"); 
@@ -87,7 +87,7 @@ char* inputword_process(char word_input[]) {
     char *dynamic_input;
     size_t length;
 
-    word_input[strcspn(word_input, "\n")] = '\0';
+    word_input[strcspn(word_input, "\n")] = '\0';  // 去除換行符號
     length = strlen(word_input);
 
     dynamic_input = (char *)malloc((length + 1) * sizeof(char));
@@ -174,7 +174,7 @@ void decrypt() {
     
     
     int len = strlen(text_to_decrypt);
-    while (len > 0 && text_to_decrypt[len-1] == 'X') {  
+    while (len > 0 && text_to_decrypt[len-1] == 'X') {   // 去除填充的 'X'
         text_to_decrypt[len-1] = '\0';
         len--;
     }
@@ -194,7 +194,7 @@ void generate_random_key(int key[MATRIX_SIZE][MATRIX_SIZE]) {
         }
 
         int det = calculate_determinant(key);
-        det = (det % 26 + 26) % 26; 
+        det = (det % 26 + 26) % 26;  // 確保行列式為正數
 
         if (mod_inverse(det, 26) != -1) {
             break; 
@@ -205,7 +205,7 @@ void generate_random_key(int key[MATRIX_SIZE][MATRIX_SIZE]) {
             stored_keys[stored_key_count][i][j] = key[i][j]; 
         }
     }
-    char random_code[5];
+    char random_code[5];  
     for (int i = 0; i < 4; i++) {
         random_code[i] = 'A' + (rand() % 26); 
     }
@@ -216,7 +216,7 @@ void generate_random_key(int key[MATRIX_SIZE][MATRIX_SIZE]) {
         printf("記憶體分配失敗！\n");
         return;
     }
-    strcpy(stored_random_code[stored_key_count], random_code);
+    strcpy(stored_random_code[stored_key_count], random_code); 
 
     stored_key_count++;
     printf("密鑰已成功儲存，本次生成的密鑰代碼是：%s\n", random_code);
@@ -227,7 +227,7 @@ void hill_cipher_EnCrypt_Dycrypt(char *text, int group_size, int key[MATRIX_SIZE
     int actual_chars = 0;
     
 
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {  
         if (text[i] != ' ') actual_chars++;
     }
 
@@ -249,7 +249,7 @@ void hill_cipher_EnCrypt_Dycrypt(char *text, int group_size, int key[MATRIX_SIZE
 
     char *temp_text = (char *)malloc(actual_chars + 1);
     int temp_index = 0;
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {  // 去除空格
         if (text[i] != ' ') {
             temp_text[temp_index++] = text[i];
         }
@@ -257,24 +257,23 @@ void hill_cipher_EnCrypt_Dycrypt(char *text, int group_size, int key[MATRIX_SIZE
     temp_text[actual_chars] = '\0';
 
 
-    for (int i = 0; i < actual_chars; i += group_size) {
+    for (int i = 0; i < actual_chars; i += group_size) {  
         int vector[MATRIX_SIZE] = {0};
         int result[MATRIX_SIZE] = {0};
         int chars_in_group = 0;
 
 
-        for (int j = 0; j < group_size && (i + j) < actual_chars; j++) {
-            vector[j] = temp_text[i + j] - 'A';
+        for (int j = 0; j < group_size && (i + j) < actual_chars; j++) {  
+            vector[j] = temp_text[i + j] - 'A';   
             chars_in_group++;
         }
 
 
-        if (chars_in_group < group_size && is_decrypt) {
+        if (chars_in_group < group_size && is_decrypt) { 
             break;
         }
 
-
-        for (int col = 0; col < group_size; col++) {
+        for (int col = 0; col < group_size; col++) {  // 最後加解密計算
             for (int row = 0; row < group_size; row++) {
                 if (row < chars_in_group) {
                     result[col] += vector[row] * key[row][col];
@@ -306,11 +305,7 @@ void hill_cipher_EnCrypt_Dycrypt(char *text, int group_size, int key[MATRIX_SIZE
 
 
     if (is_decrypt) {
-        int last_char = length - 1;
-        while (last_char >= 0 && text[last_char] == 'X') {
-            text[last_char] = '\0';
-            last_char--;
-        }
+        return;
     }
 }
 void print_matrix(int matrix[MATRIX_SIZE][MATRIX_SIZE]) {
@@ -371,7 +366,7 @@ void calculate_adjMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int adj[MATRIX_SI
     adj[2][1] = -(matrix[0][0] * matrix[1][2] - matrix[0][2] * matrix[1][0]);
     adj[2][2] = (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]);
 
-    for (int i = 0; i < MATRIX_SIZE; i++) {
+    for (int i = 0; i < MATRIX_SIZE; i++) {  
         for (int j = 0; j < MATRIX_SIZE; j++) {
             adj[i][j] = (adj[i][j] % 26 + 26) % 26;
         }
@@ -389,10 +384,10 @@ int calculate_inverse_matrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int inverse[M
     }
     int cofactor[MATRIX_SIZE][MATRIX_SIZE]; 
     calculate_adjMatrix(matrix, cofactor); 
-    for (int i = 0; i < MATRIX_SIZE; i++) {
+    for (int i = 0; i < MATRIX_SIZE; i++) {  // 轉置
         for (int j = 0; j < MATRIX_SIZE; j++) {
-            inverse[i][j] = (det_inv * cofactor[j][i]) % 26;
-            inverse[i][j] = (inverse[i][j] + 26) % 26; 
+            inverse[i][j] = (det_inv * cofactor[j][i]) % 26;  // 乘以行列式的模逆
+            inverse[i][j] = (inverse[i][j] + 26) % 26; // 確保結果為正數
         }
     }
     return 1;
@@ -401,7 +396,7 @@ int calculate_inverse_matrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int inverse[M
 int find_key_by_code(const char *code) {  
     for (int i = 0; i < stored_key_count; i++) {
         if (strcmp(stored_random_code[i], code) == 0) {
-            return i; 
+            return i; // 返回密鑰索引
         }
     }
     return -1; 
